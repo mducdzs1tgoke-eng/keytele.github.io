@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mã Key của bạn</title>
+<style>
+  :root { --bg:#f4f5f7; --card:#fff; --text:#1c1e21; --muted:#65676b; --accent:#0a84ff; --code:#eef3ff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1115; --card:#1a1d24; --text:#f1f2f4; --muted:#9aa0a6; --accent:#4da3ff; --code:#232a38; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  .card { background:var(--card); width:100%; max-width:420px; border-radius:16px; padding:28px 22px; text-align:center;
+          box-shadow:0 4px 24px rgba(0,0,0,.12); }
+  h1 { font-size:20px; margin:0 0 6px; }
+  p { color:var(--muted); font-size:14px; line-height:1.5; margin:8px 0; }
+  .code { background:var(--code); border-radius:12px; padding:16px; margin:18px 0 12px; font:700 24px/1 ui-monospace,Menlo,Consolas,monospace;
+          letter-spacing:1px; word-break:break-all; user-select:all; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:10px; padding:12px 22px; font-size:15px; font-weight:600; cursor:pointer; }
+  .err { color:#e5484d; }
+  .cmd { font-family:ui-monospace,Menlo,Consolas,monospace; color:var(--text); }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1 id="title">🎁 Mã Key của bạn</h1>
+  <div class="code" id="code">...</div>
+  <button id="copy">Sao chép mã</button>
+  <p>Quay lại bot Telegram và gửi:<br><span class="cmd" id="cmd">/redeemkey ...</span></p>
+  <p>Mã chỉ dùng được 1 lần, trong 30 phút và chỉ cho tài khoản đã bấm <b>/getkey</b>.</p>
+</div>
+<script>
+  var code = (new URLSearchParams(location.search).get("c") || "").trim();
+  var ok = /^key_[a-z0-9]{6}$/i.test(code);
+  var codeEl = document.getElementById("code");
+  if (!ok) {
+    document.getElementById("title").textContent = "⚠️ Link không hợp lệ";
+    codeEl.textContent = "Không có mã";
+    codeEl.className += " err";
+    document.getElementById("copy").style.display = "none";
+    document.getElementById("cmd").textContent = "/getkey";
+  } else {
+    codeEl.textContent = code;
+    document.getElementById("cmd").textContent = "/redeemkey " + code;
+    document.getElementById("copy").onclick = function () {
+      var btn = this;
+      var done = function () { btn.textContent = "✅ Đã sao chép"; setTimeout(function () { btn.textContent = "Sao chép mã"; }, 2000); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(code).then(done, done); } else { done(); }
+    };
+  }
+</script>
+</body>
+</html>
